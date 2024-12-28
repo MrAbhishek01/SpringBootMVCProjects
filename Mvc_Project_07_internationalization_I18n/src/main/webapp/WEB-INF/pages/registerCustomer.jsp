@@ -42,5 +42,5 @@
             <a href="?lang=en_US" style="margin: 0 10px; text-decoration: none; color: #007bff;">English</a>
         </div>
     </div>
-
+<a href="./">home</a>
 </body>
