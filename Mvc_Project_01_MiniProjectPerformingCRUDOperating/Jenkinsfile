@@ -1,16 +1,14 @@
 pipeline {
-    agent any  // run on any available Jenkins agent
+    agent any
 
     tools {
-        // If you’ve configured JDK 21 or 17 on Jenkins global tools
-        jdk 'jdk21'   // name that matches your Jenkins JDK tool configuration
-        maven 'maven3' // name matching Maven tool, if you use Maven
+        // Use the JDK name you configured in Jenkins → Global Tool Configuration
+        jdk 'jdk21'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                // Clone your GitHub repo
                 git branch: 'main',
                     url: 'https://github.com/MrAbhishek01/SpringBootMVCProjects.git'
             }
@@ -18,41 +16,38 @@ pipeline {
 
         stage('Build') {
             steps {
-                // If using Maven wrapper (mvnw) or Maven installed
-                sh './mvnw clean package -DskipTests=true'
-                // Or if not using wrapper:
-                // sh 'mvn clean package -DskipTests=true'
+                echo "Building Spring Boot Project..."
+                bat 'mvnw.cmd clean package -DskipTests'
             }
         }
 
         stage('Test') {
             steps {
-                // Run tests (if you have tests configured)
-                sh './mvnw test'
+                echo "Running Tests..."
+                bat 'mvnw.cmd test'
             }
         }
 
-        stage('Package') {
+        stage('Package WAR/JAR') {
             steps {
-                // Package the application (jar/war)
-                sh './mvnw clean package'
+                echo "Packaging Application..."
+                bat 'mvnw.cmd clean package'
             }
         }
 
-        stage('Deploy (optional)') {
+        stage('Deploy (Optional)') {
             steps {
-                // Example deploy — adapt as needed
-                echo 'Deploy step — add your deploy logic here'
+                echo "Deploying application... (Configure your deploy logic here)"
             }
         }
     }
 
     post {
         success {
-            echo "Build, test and package completed successfully."
+            echo "✔ Pipeline executed successfully!"
         }
         failure {
-            echo "Pipeline failed. Check logs."
+            echo "❌ Pipeline Failed — Check logs."
         }
     }
 }
