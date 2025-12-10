@@ -1,18 +1,9 @@
-// Declarative Jenkins pipeline for Maven (Spring MVC) project
-// - Detects Unix vs Windows agent and runs appropriate commands
-// - Builds, runs tests, archives produced JARs, and publishes JUnit results
-// Notes:
-// - Adjust the tool names in the `tools` block to match your Jenkins global tool configuration
-// - If you use Docker agents or a specific Jenkins image, consider replacing the `agent any` with `agent { docker { image 'maven:3.8.8-jdk-11' } }`
-
 pipeline {
     agent any
 
     tools {
-        // These names must match the Tool names configured in Jenkins -> Global Tool Configuration
-        // If you don't have these configured, you can remove the tools block and rely on PATH
-        maven 'Maven'
-        jdk 'JDK11'
+        maven 'Maven'   // Make sure this matches your Jenkins Maven tool name
+        jdk 'JDK11'     // Make sure this matches your Jenkins JDK tool name
     }
 
     environment {
@@ -30,9 +21,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'mvn -B -DskipTests clean package'
+                        sh 'cd Mvc_Project_07_internationalization_I18n && mvn -B -DskipTests clean package'
                     } else {
-                        bat "mvn -B -DskipTests clean package"
+                        bat 'cd Mvc_Project_07_internationalization_I18n && mvn -B -DskipTests clean package'
                     }
                 }
             }
@@ -42,9 +33,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'mvn -B test'
+                        sh 'cd Mvc_Project_07_internationalization_I18n && mvn -B test'
                     } else {
-                        bat 'mvn -B test'
+                        bat 'cd Mvc_Project_07_internationalization_I18n && mvn -B test'
                     }
                 }
             }
@@ -52,15 +43,13 @@ pipeline {
 
         stage('Archive') {
             steps {
-                // Archive generated artifacts (jar/war). Allow empty if build produces nothing locally in some flows
-                archiveArtifacts artifacts: 'target/*.jar, target/*.war', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'Mvc_Project_07_internationalization_I18n/target/*.jar, Mvc_Project_07_internationalization_I18n/target/*.war', allowEmptyArchive: true
             }
         }
 
         stage('Publish Test Results') {
             steps {
-                // Publish JUnit results if present
-                junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                junit allowEmptyResults: true, testResults: 'Mvc_Project_07_internationalization_I18n/target/surefire-reports/*.xml'
             }
         }
     }
@@ -76,7 +65,6 @@ pipeline {
             echo 'Build finished: FAILURE'
         }
         always {
-            // Cleanup workspace to keep nodes tidy
             cleanWs()
         }
     }
